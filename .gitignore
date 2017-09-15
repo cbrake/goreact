@@ -1,0 +1,10 @@
+bindata.go
+/app
+/sample-post
+/portal.exe
+/vc-sim.exe
+frontend/elm-stuff
+frontend/elm.js
+vendor/*/
+
+
