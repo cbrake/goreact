@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cbrake/goreact/sms"
 	log "github.com/sirupsen/logrus"
-	"pointwatch.com/sms"
 )
 
 func main() {

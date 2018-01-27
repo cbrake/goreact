@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"pointwatch.com/email"
+	"github.com/cbrake/goreact/email"
 
 	docopt "github.com/docopt/docopt-go"
 )
