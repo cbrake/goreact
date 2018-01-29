@@ -36,12 +36,34 @@ export class Navigation extends React.Component {
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink href="#">Home</NavLink>
+                <NavLink
+                  href="#"
+                  onClick={() => {
+                    this.toggle();
+                    this.props.update({
+                      type: "CHANGE_PAGE",
+                      value: "home"
+                    });
+                  }}
+                >
+                  Home
+                </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="#">History</NavLink>
+                <NavLink
+                  href="#"
+                  onClick={() => {
+                    this.toggle();
+                    this.props.update({
+                      type: "CHANGE_PAGE",
+                      value: "history"
+                    });
+                  }}
+                >
+                  History
+                </NavLink>
               </NavItem>
-              <UncontrolledDropdown nav inNavbar>
+              <UncontrolledDropdown>
                 <DropdownToggle nav caret>
                   Options
                 </DropdownToggle>
