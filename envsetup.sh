@@ -15,7 +15,7 @@ app_build_frontend() {
 }
 
 app_build_backend() {
-  go build -o app cmd/app/main.go || return 1
+  go build -o goreact cmd/app/main.go || return 1
   go build -o sample-post cmd/sample-post/main.go || return 1
   return 0
 }
@@ -60,8 +60,10 @@ app_watch() {
   trap - SIGINT
 }
 
-app_build_windows() {
+app_build_other() {
   app_build_frontend || return 1
-  GOOS=windows GOARCH=amd64 go build -o app.exe cmd/app/main.go || return 1
-  GOOS=windows GOARCH=amd64 go build -o sample-post.exe cmd/sample-post/main.go || return 1
+  GOOS=windows GOARCH=amd64 go build -o goreact.exe cmd/app/main.go || return 1
+  GOOS=windows GOARCH=amd64 go build -o goreact.exe cmd/app/main.go || return 1
+  GOOS=darwin GOARCH=amd64 go build -o goreact_mac cmd/app/main.go || return 1
+  GOOS=linux GOARCH=arm go build -o goreact_arm cmd/app/main.go || return 1
 }

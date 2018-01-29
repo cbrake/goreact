@@ -9,4 +9,5 @@ vendor/*/
 node_modules
 dist
 .cache
+goreact*
 

@@ -9,7 +9,7 @@ export const Home = () => {
     <Container>
       <Row>
         <Col xs="6" sm="4">
-          <h1>Log Messages</h1>
+          <h1>Device Status</h1>
           <ButtonGroup>
             <Button color="primary">Enable</Button>
             <Button color="info">Update</Button>
