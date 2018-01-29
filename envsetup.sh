@@ -1,26 +1,67 @@
 app_setup() {
   go get -u github.com/jteeuwen/go-bindata/...
-  go get -u github.com/kardianos/govendor
-  npm install -g elm
-  govendor sync
+  #go get -u github.com/elazarl/go-bindata-assetfs/...
+  go get -u github.com/mfindlater/go-bindata-assetfs/...
+  dep ensure
 }
 
 app_build_frontend() {
-  (cd frontend && elm-package install --yes) || return 1
-  (cd frontend && elm-make --yes main.elm --output elm.js) || return 1
-  go-bindata -o frontend/bindata.go -pkg frontend frontend/index.html frontend/elm.js frontend/bootstrap.min.css || return 1
+  (cd frontend && npm run build) || return 1
+  echo "generate bindata ..."
+  #go-bindata-assetfs -prefix "frontend/dist" frontend/dist/...
+  go-bindata -o frontend/bindata.go -pkg frontend -prefix "frontend/dist" frontend/dist/... || return 1
+  #(cd frontend/dist && go-bindata-assetfs -o ../bindata.go -pkg frontend ./...) || return 1
   return 0
 }
 
-app_build() {
-  app_build_frontend || return 1
+app_build_backend() {
   go build -o app cmd/app/main.go || return 1
   go build -o sample-post cmd/sample-post/main.go || return 1
   return 0
 }
 
+app_build() {
+  app_build_frontend || return 1
+  app_build_backend || return 1
+  return 0
+}
+
+app_build_and_run() {
+  echo "rebuilding backend ..."
+  app_build_backend || return 1
+  echo "starting app ..."
+  ./app --dev || return 1
+  return 0
+}
+
+app_find_backend_files() {
+  find -name "vendor" -prune \
+    -o -name "*.go" -print
+}
+
+app_watch_backend() {
+  app_find_backend_files | entr -r ./build_and_run.sh || return 1
+  return 0
+}
+
+app_watch_frontend() {
+  (cd frontend && npm run watch) || return 1
+  return 0
+}
+
+# the below would be used for running in development
+# is not working yet, so just run app_watch_backend
+# and app_watch_frontend in separate terminal windows
+app_watch() {
+  app_watch_backend &
+  app_watch_frontend &
+  trap 'kill %1; kill %2' SIGINT
+  wait
+  trap - SIGINT
+}
+
 app_build_windows() {
   app_build_frontend || return 1
-  GOOS=windows GOARCH=amd64 go build -o portal.exe cmd/portal/main.go || return 1
-  GOOS=windows GOARCH=amd64 go build -o vc-sim.exe cmd/vc-sim/main.go || return 1
+  GOOS=windows GOARCH=amd64 go build -o app.exe cmd/app/main.go || return 1
+  GOOS=windows GOARCH=amd64 go build -o sample-post.exe cmd/sample-post/main.go || return 1
 }

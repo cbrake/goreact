@@ -1,5 +1,5 @@
-Go/Elm Web app
-==============
+Go/React Web app
+================
 
 Overview
 --------
@@ -42,9 +42,9 @@ To set up a build environment (only tested under Linux):
 
 * install nodejs and the Go language
 * set up your Go development directory and GOPATH (http://bec-systems.com/site/1275/setting-up-a-go-development-environment)
-* mkdir -p $GOPATH/src
-* git clone git@git.bec-systems.com:cbrake/goelm.git $GOPATH/src/goelm
-* cd $GOPATH/src/goelm
+* mkdir -p $GOPATH/src/github.com/cbrake/
+* git clone git@git.bec-systems.com:cbrake/goelm.git $GOPATH/src/github.com/cbrake/goelm
+* cd $GOPATH/src/github.com/cbrake/goelm
 * source envsetup.sh
 * app\_setup (only run once)
 * app\_build (build Linux binaries)
@@ -53,14 +53,15 @@ To set up a build environment (only tested under Linux):
 
 Implementation details:
 
-* all assets and files (including the elm frontend) are embedded in the golang server binary.  This makes deployment of new versions very simple for development or production -- all you need is a single binary.
+* all assets and files (including the frontend) are embedded in the golang server binary.  This makes deployment of new versions very simple for development or production -- all you need is a single binary.
 * There is no separate run-time to install (like Python, Ruby, Nodejs, Java, or C# environments).  Everything is statically included in the binary.  Again, this makes deployment very simple.
 * there are no dependencies or stack that needs to be installed on the server -- only a single binary.
+* this app runs well even on low end embedded ARM systems as the memory requirements and speed of Go are similiar to C.
 
 Editors/Tooling
 ---------------
 
-There are a number of editors that support Golang and Elm development very well including Vim, Atom, Visual Studio Code, etc.  If you don't have a strong preference, Visual Studio Code is a good one to start with.
+There are a number of editors that support Golang and React development very well including Vim, Atom, Visual Studio Code, etc.  If you don't have a strong preference, Visual Studio Code is a good one to start with.
 
 ### Visual Studio
 
@@ -70,11 +71,9 @@ To install:
 
 * install Visual Studio Code under Linux (https://code.visualstudio.com/)
 * install Go extension: Ctrl+P, then enter "ext install Go"
-* install elm extension: Ctrl+P, then enter "ext install elm"
 
-Visual Studio is configured to auto-format Go and Elm code automatically when saved.  
+Visual Studio is configured to auto-format Go and Javascript code automatically when saved.  
 This helps keep code clean looking and consistent.  
-Note, the elm option to auto-format on save is set in .vscode/settings.json.
 
 VS Code also has an integrated terminal that will allow you to run the app\_build from within your editor.
 

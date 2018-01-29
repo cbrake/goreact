@@ -4,47 +4,24 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"goelm/db"
-	"goelm/frontend"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/cbrake/goreact/db"
+	"github.com/cbrake/goreact/frontend"
+	docopt "github.com/docopt/docopt-go"
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 var port = ":8090"
-
-func rootHandler(rw http.ResponseWriter, req *http.Request) {
-	if bs, err := frontend.Asset("frontend/index.html"); err != nil {
-		rw.WriteHeader(http.StatusNotFound)
-	} else {
-		var reader = bytes.NewBuffer(bs)
-		io.Copy(rw, reader)
-	}
-}
-
-func elmJsHandler(rw http.ResponseWriter, req *http.Request) {
-	if bs, err := frontend.Asset("frontend/elm.js"); err != nil {
-		rw.WriteHeader(http.StatusNotFound)
-	} else {
-		var reader = bytes.NewBuffer(bs)
-		io.Copy(rw, reader)
-	}
-}
-
-func bootstrapHandler(rw http.ResponseWriter, req *http.Request) {
-	if bs, err := frontend.Asset("frontend/bootstrap.min.css"); err != nil {
-		rw.WriteHeader(http.StatusNotFound)
-	} else {
-		rw.Header().Set("Content-Type", "text/css")
-		var reader = bytes.NewBuffer(bs)
-		io.Copy(rw, reader)
-	}
-}
 
 func vcConfigGetAllHander(rw http.ResponseWriter, req *http.Request) {
 	mSes := db.GetSession()
@@ -117,25 +94,60 @@ func vcConfigPostHander(rw http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	fmt.Println("OKI Portal, v4")
+	fmt.Println("Go React demo app, v1")
 
-	err := db.Connect(false)
+	usage := `Go/React demo application.
+
+Usage:
+	app [--dev]
+
+Options:
+	--dev  start in development mode
+`
+
+	arguments, err := docopt.Parse(usage, nil, true, "Go React", false)
 
 	if err != nil {
-		fmt.Println("Error connecting to mongo")
+		fmt.Println("Error parsing arguments: ", err)
 		return
 	}
 
+	dev := arguments["--dev"].(bool)
+
+	if dev {
+		fmt.Println("Starting in DEVELOPMENT mode")
+	}
+
+	/*
+		err := db.Connect(false)
+
+		if err != nil {
+			fmt.Println("Error connecting to mongo")
+			return
+		}
+	*/
+
 	r := mux.NewRouter()
-	r.HandleFunc("/", rootHandler)
-	r.HandleFunc("/elm.js", elmJsHandler)
-	r.HandleFunc("/bootstrap.min.css", bootstrapHandler)
+
+	if dev {
+		r.PathPrefix("/").Handler(http.FileServer(http.Dir("./frontend/dist")))
+	} else {
+		afs := assetfs.AssetFS{
+			Asset:     frontend.Asset,
+			AssetDir:  frontend.AssetDir,
+			AssetInfo: frontend.AssetInfo,
+			Prefix:    "",
+		}
+
+		r.PathPrefix("/").Handler(http.FileServer(&afs))
+	}
 	r.HandleFunc("/sample", vcConfigGetAllHander).Methods("GET")
 	r.HandleFunc("/sample/{sn}", vcConfigGetHander).Methods("GET")
 	r.HandleFunc("/sample/{sn}", vcConfigPostHander).Methods("POST")
 
+	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 	log.Println("starting server on: http://localhost" + port)
-	err = http.ListenAndServe(port, r)
+	err = http.ListenAndServe(port, loggedRouter)
 
 	if err != nil {
 		fmt.Println("Error starting server: ", err)

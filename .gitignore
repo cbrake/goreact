@@ -6,5 +6,7 @@ bindata.go
 frontend/elm-stuff
 frontend/elm.js
 vendor/*/
-
+node_modules
+dist
+.cache
 

@@ -1,28 +1,32 @@
 import React, { Component } from "react";
-import { Button, ButtonGroup } from "reactstrap";
-import { Container } from "reactstrap";
-import { ListGroup, ListGroupItem } from "reactstrap";
-
-const logMessages = [
-  "Power factor error",
-  "Module reset",
-  "Server Connection error"
-];
+import { Navigation } from "./Navigation";
+import { Home } from "./Home";
 
 export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentPage: "home"
+    };
+  }
+  update(u) {
+    switch (u.type) {
+      case CHANGE_PAGE:
+        this.setState({ currentPage: u.value });
+        break;
+    }
+  }
   render() {
+    const pageMap = {
+      home: <Home update={this.update} />,
+      history: <History update={this.update} />
+    };
+    const page = pageMap[this.state.currentPage];
     return (
-      <Container>
-        <h1>Log Messages</h1>
-        <ButtonGroup>
-          <Button color="primary">Start</Button>
-        </ButtonGroup>
-        <ListGroup>
-          {logMessages.map((m, i) => {
-            return <ListGroupItem key={i}>{m}</ListGroupItem>;
-          })}
-        </ListGroup>
-      </Container>
+      <span>
+        <Navigation />
+        {page}
+      </span>
     );
   }
 }
