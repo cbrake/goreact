@@ -60,6 +60,9 @@ To set up a build environment (only tested under Linux):
 
 ## Development
 
+Install the following:
+* http://entrproject.org/
+
 The following commands can be run (in separate terminal windows) during development.
 Any time one of the source files in the project are changed, then appropriate parts of
 the project are rebuilt, and automatically reloaded (if frontend change).
